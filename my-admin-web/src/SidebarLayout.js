@@ -12,7 +12,7 @@ const SidebarLayout = ({ children }) => {
   return (
     <div style={styles.container}>
       <div style={styles.sidebar}>
-      <h2 style={styles.logo}>Mamaria's Pizza</h2>
+      <h2 style={styles.logo}>Powerpuff Shop</h2>
         <h2 style={styles.logo}>Admin Panel</h2>
         <nav style={styles.nav}>
           <Link to="/menu" style={styles.navLink}>Menu Management</Link>
@@ -35,7 +35,7 @@ const styles = {
   },
   sidebar: {
     width: '250px',
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#ff69b4', // Pink
     color: '#fff',
     display: 'flex',
     flexDirection: 'column',
@@ -59,17 +59,17 @@ const styles = {
     borderRadius: '5px',
     marginBottom: '10px',
     textAlign: 'center',
-    backgroundColor: '#ff9f70',
+    backgroundColor: '#ff85c0', // Lighter pink
     fontWeight: 'bold',
     cursor: 'pointer',
   },
   navLinkHover: {
-    backgroundColor: '#ff6f30',
+    backgroundColor: '#ff1493', // Darker pink
   },
   logoutButton: {
     marginTop: 'auto',
     backgroundColor: '#fff',
-    color: '#ff7f50',
+    color: '#ff69b4', // Pink
     border: 'none',
     borderRadius: '5px',
     padding: '10px 15px',
@@ -79,7 +79,7 @@ const styles = {
   content: {
     flex: 1,
     padding: '20px',
-    backgroundColor: '#fff5e5',
+    backgroundColor: '#ffe4e1', // Light pink
   },
 };
 

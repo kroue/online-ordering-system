@@ -32,13 +32,13 @@ const Tracking = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff5e5',
+    backgroundColor: '#ffe6f2', // Light pink background
     padding: 20,
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#ff7f50',
+    color: '#ff66b2', // Pink title
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -55,6 +55,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    borderColor: '#ff99cc', // Pink border
+    borderWidth: 1,
   },
   itemName: {
     fontSize: 16,
@@ -67,15 +69,15 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   preparing: {
-    color: 'orange',
+    color: '#ff99cc', // Light pink for preparing
     fontWeight: 'bold',
   },
   ready: {
-    color: 'green',
+    color: '#b30059', // Darker pink for ready
     fontWeight: 'bold',
   },
   backButton: {
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#ff66b2', // Pink button
     borderRadius: 10,
     paddingVertical: 15,
     alignItems: 'center',

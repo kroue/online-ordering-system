@@ -106,7 +106,7 @@ const styles = {
   title: {
     fontSize: '28px',
     fontWeight: 'bold',
-    color: '#ff7f50',
+    color: '#ff69b4', // Pink
     marginBottom: '20px',
   },
   form: {
@@ -125,7 +125,7 @@ const styles = {
     border: '1px solid #ddd',
   },
   button: {
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#ff69b4', // Pink
     color: '#fff',
     border: 'none',
     borderRadius: '5px',
@@ -149,7 +149,7 @@ const styles = {
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
   editButton: {
-    backgroundColor: '#ffa07a',
+    backgroundColor: '#ff85c0', // Lighter pink
     color: '#fff',
     border: 'none',
     borderRadius: '5px',
@@ -158,7 +158,7 @@ const styles = {
     cursor: 'pointer',
   },
   deleteButton: {
-    backgroundColor: '#ff4d4d',
+    backgroundColor: '#ff1493', // Darker pink
     color: '#fff',
     border: 'none',
     borderRadius: '5px',

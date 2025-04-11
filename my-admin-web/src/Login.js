@@ -58,7 +58,7 @@ const styles = {
   title: {
     fontSize: '28px',
     fontWeight: 'bold',
-    color: '#ff7f50',
+    color: '#ff69b4', // Pink
     marginBottom: '10px',
   },
   subtitle: {
@@ -81,7 +81,7 @@ const styles = {
     width: '100%',
     maxWidth: '400px',
     height: '50px',
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#ff69b4', // Pink
     borderRadius: '10px',
     color: '#fff',
     fontSize: '16px',
@@ -95,7 +95,7 @@ const styles = {
     color: '#555',
   },
   link: {
-    color: '#ff7f50',
+    color: '#ff69b4', // Pink
     fontWeight: 'bold',
     cursor: 'pointer',
   },

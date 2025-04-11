@@ -57,13 +57,13 @@ const Order = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff5e5',
+    backgroundColor: '#ffe4e1', // Light pink background
     padding: 20,
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#ff7f50',
+    color: '#ff69b4', // Hot pink title
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 15,
-    backgroundColor: '#fff',
+    backgroundColor: '#fff', // Keep white for contrast
     marginBottom: 10,
     borderRadius: 10,
     elevation: 2,
@@ -94,9 +94,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
     textAlign: 'center',
+    color: '#ff1493', // Deep pink for total
   },
   checkoutButton: {
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#ff69b4', // Hot pink button
     borderRadius: 10,
     paddingVertical: 15,
     alignItems: 'center',

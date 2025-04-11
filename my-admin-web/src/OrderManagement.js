@@ -50,7 +50,7 @@ const styles = {
   title: {
     fontSize: '28px',
     fontWeight: 'bold',
-    color: '#ff7f50',
+    color: '#ff69b4', // Pink
     marginBottom: '20px',
   },
   list: {
@@ -70,7 +70,7 @@ const styles = {
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
   button: {
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#ff69b4', // Pink
     color: '#fff',
     border: 'none',
     borderRadius: '5px',

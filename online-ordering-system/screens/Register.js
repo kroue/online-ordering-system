@@ -61,18 +61,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff5e5',
+    backgroundColor: '#ffe6f2', // Light pink background
     padding: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#ff7f50',
+    color: '#ff66b2', // Pink title
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
-    color: '#555',
+    color: '#b30059', // Darker pink subtitle
     marginBottom: 30,
   },
   input: {
@@ -83,12 +83,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#ff99cc', // Pink border
   },
   button: {
     width: '100%',
     height: 50,
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#ff66b2', // Pink button
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   link: {
-    color: '#ff7f50',
+    color: '#ff66b2', // Pink link
     fontWeight: 'bold',
   },
 });
