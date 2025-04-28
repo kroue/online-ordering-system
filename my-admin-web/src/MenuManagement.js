@@ -245,7 +245,7 @@ const styles = {
   title: {
     fontSize: '28px',
     fontWeight: 'bold',
-    color: '#ff7f50',
+    color: '#ff69b4', // Pink
     marginBottom: '20px',
   },
   columns: {
@@ -295,7 +295,7 @@ const styles = {
     overflow: 'hidden',
   },
   button: {
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#ff69b4', // Pink
     color: '#fff',
     border: 'none',
     borderRadius: '5px',
@@ -316,14 +316,17 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
-  image: {
-    width: '100px',
-    height: '100px',
-    borderRadius: '10px',
-    marginRight: '15px',
+  editButton: {
+    backgroundColor: '#ffa07a',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    padding: '5px 10px',
+    marginRight: '5px',
+    cursor: 'pointer',
   },
   deleteButton: {
-    backgroundColor: '#ff4d4d',
+    backgroundColor: '#ff1493', // Darker pink
     color: '#fff',
     border: 'none',
     borderRadius: '5px',

@@ -211,13 +211,13 @@ const Menu = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff5e5',
+    backgroundColor: '#ffe4e1', // Light pink background
     padding: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#ff7f50',
+    color: '#ff69b4', // Hot pink
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   addButton: {
-    backgroundColor: '#ffa07a',
+    backgroundColor: '#ff1493', // Deep pink
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 5,
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   button: {
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#ff69b4', // Hot pink
     borderRadius: 10,
     paddingVertical: 15,
     alignItems: 'center',
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   logoutText: {
-    color: '#ff7f50',
+    color: '#ff69b4', // Hot pink
     fontWeight: 'bold',
     fontSize: 16,
   },
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#ff7f50',
+    color: '#ff69b4', // Hot pink
     marginBottom: 20,
   },
   label: {
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     flex: 1,
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#ff69b4', // Hot pink
     borderRadius: 10,
     paddingVertical: 10,
     alignItems: 'center',

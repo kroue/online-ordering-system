@@ -35,7 +35,7 @@ const styles = {
   title: {
     fontSize: '28px',
     fontWeight: 'bold',
-    color: '#ff7f50',
+    color: '#ff69b4', // Pink
     marginBottom: '20px',
   },
   list: {
