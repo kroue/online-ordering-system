@@ -1,19 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, TextInput, Alert, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Menu = ({ navigation }) => {
   const [menuItems] = useState([
-    { id: '1', name: 'Pizza', price: 10, customizable: true },
-    { id: '2', name: 'Burger', price: 5, customizable: true },
-    { id: '3', name: 'Pasta', price: 8, customizable: false },
-    { id: '4', name: 'Salad', price: 6, customizable: false },
+    {
+      id: '1',
+      name: 'Margherita',
+      description: 'Classic cheese and tomato pizza.',
+      price: 10,
+      image: require('../assets/margherita.jpg'),
+      customizable: true,
+    },
+    {
+      id: '2',
+      name: 'Pepperoni',
+      description: 'Topped with pepperoni slices.',
+      price: 12,
+      image: require('../assets/pepperoni.jpg'),
+      customizable: true,
+    },
+    {
+      id: '3',
+      name: 'BBQ Chicken',
+      description: 'BBQ sauce base with chicken toppings.',
+      price: 15,
+      image: require('../assets/bbq_chicken.jpg'),
+      customizable: false,
+    },
+    {
+      id: '4',
+      name: 'Hawaiian',
+      description: 'Pineapple and ham on a cheese base.',
+      price: 14,
+      image: require('../assets/hawaiian.jpg'),
+      customizable: false,
+    },
   ]);
 
   const [cart, setCart] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [customization, setCustomization] = useState('');
+  const [customization, setCustomization] = useState({
+    size: 'Medium',
+    crust: 'Normal crust',
+    toppings: [],
+  });
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const toppingsOptions = ['Extra Cheese', 'Mushrooms', 'Pepperoni', 'Olives', 'Onions'];
 
   useEffect(() => {
     navigation.setOptions({
@@ -36,15 +70,11 @@ const Menu = ({ navigation }) => {
   };
 
   const handleAddCustomizedItem = () => {
-    if (!customization.trim()) {
-      Alert.alert('Error', 'Please provide customization details.');
-      return;
-    }
     setCart((prev) => [
       ...prev,
       { ...selectedItem, customization },
     ]);
-    setCustomization('');
+    setCustomization({ size: 'Medium', crust: 'Normal crust', toppings: [] });
     setSelectedItem(null);
     setIsModalVisible(false);
     Alert.alert('Added to Cart', `${selectedItem.name} has been customized and added to your cart.`);
@@ -69,8 +99,10 @@ const Menu = ({ navigation }) => {
 
   const renderMenuItem = ({ item }) => (
     <View style={styles.card}>
-      <View>
+      <Image source={item.image} style={styles.image} />
+      <View style={styles.cardContent}>
         <Text style={styles.itemName}>{item.name}</Text>
+        <Text style={styles.itemDescription}>{item.description}</Text>
         <Text style={styles.itemPrice}>${item.price}</Text>
       </View>
       <TouchableOpacity onPress={() => addToCart(item)} style={styles.addButton}>
@@ -97,14 +129,61 @@ const Menu = ({ navigation }) => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Customize {selectedItem?.name}</Text>
-            <Text style={styles.label}>Customization</Text>
-            <TextInput
-              style={styles.textArea}
-              placeholder="Enter customization details (e.g., extra cheese, no onions)"
-              value={customization}
-              onChangeText={(text) => setCustomization(text)}
-              multiline
-            />
+            <Text style={styles.label}>Size</Text>
+            <View style={styles.options}>
+              {['Small', 'Medium', 'Large'].map((size) => (
+                <TouchableOpacity
+                  key={size}
+                  style={[
+                    styles.optionButton,
+                    customization.size === size && styles.selectedOption,
+                  ]}
+                  onPress={() => setCustomization((prev) => ({ ...prev, size }))}
+                >
+                  <Text style={styles.optionText}>{size}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.label}>Crust</Text>
+            <View style={styles.options}>
+              {['Normal crust', 'Thin crust', 'Stuffed crust'].map((crust) => (
+                <TouchableOpacity
+                  key={crust}
+                  style={[
+                    styles.optionButton,
+                    customization.crust === crust && styles.selectedOption,
+                  ]}
+                  onPress={() => setCustomization((prev) => ({ ...prev, crust }))}
+                >
+                  <Text style={styles.optionText}>{crust}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.label}>Toppings</Text>
+            <View style={styles.options}>
+              {toppingsOptions.map((topping) => (
+                <TouchableOpacity
+                  key={topping}
+                  style={[
+                    styles.optionButton,
+                    customization.toppings.includes(topping) && styles.selectedOption,
+                  ]}
+                  onPress={() =>
+                    setCustomization((prev) => ({
+                      ...prev,
+                      toppings: prev.toppings.includes(topping)
+                        ? prev.toppings.filter((t) => t !== topping)
+                        : [...prev.toppings, topping],
+                    }))
+                  }
+                >
+                  <Text style={styles.optionText}>{topping}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={styles.modalButton}
@@ -116,7 +195,7 @@ const Menu = ({ navigation }) => {
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={() => {
                   setIsModalVisible(false);
-                  setCustomization('');
+                  setCustomization({ size: 'Medium', crust: 'Normal crust', toppings: [] });
                 }}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
@@ -156,13 +235,26 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  image: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    marginRight: 15,
+  },
+  cardContent: {
+    flex: 1,
   },
   itemName: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
+  },
+  itemDescription: {
+    fontSize: 14,
+    color: '#777',
+    marginVertical: 5,
   },
   itemPrice: {
     fontSize: 16,
@@ -224,17 +316,26 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     alignSelf: 'flex-start',
   },
-  textArea: {
-    width: '100%',
-    height: 100,
+  options: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 15,
+  },
+  optionButton: {
     backgroundColor: '#f9f9f9',
     borderRadius: 10,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    marginBottom: 15,
+    padding: 10,
+    margin: 5,
     borderWidth: 1,
     borderColor: '#ddd',
-    textAlignVertical: 'top',
+  },
+  selectedOption: {
+    backgroundColor: '#ff7f50',
+    borderColor: '#ff7f50',
+  },
+  optionText: {
+    color: '#555',
+    fontWeight: 'bold',
   },
   modalButtons: {
     flexDirection: 'row',

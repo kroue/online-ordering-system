@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 
 const Order = ({ route, navigation }) => {
-  const { cart, setCart } = route.params; // Receive setCart from the parent
+  const { cart, setCart } = route.params; // Receive cart and setCart from the parent
 
   const total = cart.reduce((sum, item) => sum + item.price, 0);
 
@@ -29,9 +29,17 @@ const Order = ({ route, navigation }) => {
         <Text style={styles.itemName}>{item.name}</Text>
         <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
         {item.customization && (
-          <Text style={styles.customization}>
-            Customization: {item.customization}
-          </Text>
+          <View style={styles.customizationContainer}>
+            <Text style={styles.customization}>
+              Size: {item.customization.size}
+            </Text>
+            <Text style={styles.customization}>
+              Crust: {item.customization.crust}
+            </Text>
+            <Text style={styles.customization}>
+              Toppings: {item.customization.toppings.join(', ')}
+            </Text>
+          </View>
         )}
       </View>
     </View>
@@ -84,10 +92,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#555',
   },
+  customizationContainer: {
+    marginTop: 5,
+  },
   customization: {
     fontSize: 14,
     color: '#777',
-    marginTop: 5,
   },
   total: {
     fontSize: 18,
