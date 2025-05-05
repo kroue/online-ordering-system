@@ -6,6 +6,9 @@ import Register from './Register';
 import MenuManagement from './MenuManagement';
 import OrderManagement from './OrderManagement';
 import UserManagement from './UserManagement';
+import CreatePizza from './CreatePizza';
+import CreateSize from './CreateSize';
+import CreateTopping from './CreateTopping';
 
 function App() {
   return (
@@ -17,7 +20,10 @@ function App() {
         <Route path="/register" element={<Register />} />
         {/* Sidebar layout for authenticated pages */}
         <Route path="/menu" element={<SidebarLayout><MenuManagement /></SidebarLayout>} />
+        <Route path="/create-pizza" element={<SidebarLayout><CreatePizza /></SidebarLayout>} />
+        <Route path="/create-size" element={<SidebarLayout><CreateSize /></SidebarLayout>} />
         <Route path="/orders" element={<SidebarLayout><OrderManagement /></SidebarLayout>} />
+        <Route path="/create-topping" element={<SidebarLayout><CreateTopping /></SidebarLayout>} />
         <Route path="/users" element={<SidebarLayout><UserManagement /></SidebarLayout>} />
       </Routes>
     </Router>

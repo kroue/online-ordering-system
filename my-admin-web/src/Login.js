@@ -6,9 +6,28 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    localStorage.setItem('user', JSON.stringify({ email }));
-    navigate('/menu'); // Navigate to the Menu page
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/accounts/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('user', JSON.stringify(data));
+        navigate('/menu'); // Navigate to the Menu page
+      } else {
+        const data = await response.json();
+        alert(`Login failed: ${data.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   return (

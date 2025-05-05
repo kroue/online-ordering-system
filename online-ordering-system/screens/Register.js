@@ -13,13 +13,28 @@ const Register = ({ navigation }) => {
     }
 
     try {
-      // Save user credentials (simulate registration)
-      await AsyncStorage.setItem('registeredUser', JSON.stringify({ email, password }));
-      Alert.alert('Success', 'Account created successfully!', [
-        { text: 'OK', onPress: () => navigation.navigate('Login') },
-      ]);
+      const response = await fetch('http://192.168.1.160/online-ordering-system/api/register.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      console.log('Raw response:', response); // For debugging status code etc.
+
+      const result = await response.json();
+      console.log('Parsed response:', result); // See if it's structured correctly
+
+      if (result.success) {
+        Alert.alert('Success', result.message, [
+          { text: 'OK', onPress: () => navigation.navigate('Login') },
+        ]);
+      } else {
+        Alert.alert('Registration Failed', result.message);
+      }
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Fetch error:', error);
       Alert.alert('Error', 'Something went wrong.');
     }
   };

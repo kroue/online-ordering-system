@@ -6,10 +6,27 @@ function Register() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleRegister = () => {
-    localStorage.setItem('user', JSON.stringify({ email }));
-    alert('User Registered');
-    navigate('/login'); // Navigate back to Login after registration
+  const handleRegister = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/accounts/register/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: email, email, password }),
+      });
+
+      if (response.ok) {
+        alert('User Registered');
+        navigate('/login'); // Navigate back to Login after registration
+      } else {
+        const data = await response.json();
+        alert(`Registration failed: ${data.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   return (
