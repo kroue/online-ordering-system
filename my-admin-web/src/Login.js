@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+
+  // Automatically log in if user data exists in localStorage
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      navigate('/menu'); // Redirect to Menu if already logged in
+    }
+  }, [navigate]);
 
   const handleLogin = async () => {
     try {
@@ -18,7 +26,7 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('user', JSON.stringify(data));
+        localStorage.setItem('user', JSON.stringify(data)); // Store user data in localStorage
         navigate('/menu'); // Navigate to the Menu page
       } else {
         const data = await response.json();

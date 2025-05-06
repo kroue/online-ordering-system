@@ -15,10 +15,10 @@ function Register() {
         },
         body: JSON.stringify({ username: email, email, password }),
       });
-
+  
       if (response.ok) {
-        alert('User Registered');
-        navigate('/login'); // Navigate back to Login after registration
+        alert('User Registered. Please check your email to verify.');
+        navigate('/verify-email', { state: { email } }); // Pass email to the verification page
       } else {
         const data = await response.json();
         alert(`Registration failed: ${data.error || 'Unknown error'}`);
@@ -28,6 +28,7 @@ function Register() {
       alert('An error occurred. Please try again.');
     }
   };
+  
 
   return (
     <div style={styles.container}>

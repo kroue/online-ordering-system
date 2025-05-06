@@ -12,7 +12,7 @@ const SidebarLayout = ({ children }) => {
   return (
     <div style={styles.container}>
       <div style={styles.sidebar}>
-      <h2 style={styles.logo}>Powerpuff Shop</h2>
+        <h2 style={styles.logo}>Mamaria's Pizza</h2>
         <h2 style={styles.logo}>Admin Panel</h2>
         <nav style={styles.nav}>
           <Link to="/menu" style={styles.navLink}>Menu Management</Link>

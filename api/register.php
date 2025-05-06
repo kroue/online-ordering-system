@@ -4,7 +4,6 @@ header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Content-Type: application/json");
 
-// Stop preflight OPTIONS request from triggering registration
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
@@ -35,10 +34,22 @@ if ($check->num_rows > 0) {
     exit();
 }
 
+// Generate a verification code
+$verification_code = rand(100000, 999999);
+
 // Insert new user into database
-$sql = "INSERT INTO users (email, password) VALUES ('$email', '$password')";
+$sql = "INSERT INTO users (email, password, verification_code) VALUES ('$email', '$password', '$verification_code')";
 if ($conn->query($sql)) {
-    echo json_encode(["success" => true, "message" => "Registration successful."]);
+    // Send verification email
+    $subject = "Verify Your Email";
+    $message = "Your verification code is: $verification_code";
+    $headers = "From: no-reply@yourdomain.com";
+
+    if (mail($email, $subject, $message, $headers)) {
+        echo json_encode(["success" => true, "message" => "Registration successful. Verification email sent."]);
+    } else {
+        echo json_encode(["success" => false, "message" => "Registration successful, but failed to send verification email."]);
+    }
 } else {
     echo json_encode(["success" => false, "message" => "Registration failed."]);
 }

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Your Email</title>
+</head>
+<body>
+    <p>Hi {{ user.username }},</p>
+    <p>Thank you for registering. Please use the following code to verify your email:</p>
+    <h2>{{ verification_code }}</h2>
+    <p>Or click the link below to verify:</p>
+    <a href="http://{{ domain }}/verify-email?email={{ user.email }}&code={{ verification_code }}">Verify Email</a>
+    <p>Thank you!</p>
+</body>
+</html>s

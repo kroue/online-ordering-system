@@ -5,8 +5,38 @@ const MenuManagement = () => {
   const [pizzas, setPizzas] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [toppings, setToppings] = useState([]);
+  const [user, setUser] = useState(null); // To hold the logged-in user's data
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Check if user is in localStorage
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      navigate('/login'); // Redirect to login if no user is found
+    } else {
+      setUser(JSON.parse(storedUser)); // Set the user state if logged in
+      fetchPizzas();
+      fetchSizes();
+      fetchToppings();
+    }
+
+    // Listen for changes in localStorage (to handle logout across tabs)
+    const handleStorageChange = () => {
+      if (!localStorage.getItem('user')) {
+        setUser(null); // Clear user state if logged out
+        navigate('/login'); // Redirect to login
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Cleanup event listener on unmount
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [navigate]);
+
+  // Fetch functions
   const fetchPizzas = async () => {
     try {
       const response = await fetch('http://localhost/online-ordering-system/api/pizzas.php');
@@ -27,8 +57,8 @@ const MenuManagement = () => {
       const response = await fetch('http://localhost/online-ordering-system/api/sizes.php');
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched Sizes:', data); // Debugging line
-        setSizes(Array.isArray(data) ? data : []); // Ensure data is an array
+        console.log('Fetched Sizes:', data);
+        setSizes(Array.isArray(data) ? data : []);
       } else {
         console.error('Failed to fetch sizes');
       }
@@ -36,15 +66,15 @@ const MenuManagement = () => {
       console.error('Error fetching sizes:', error);
     }
   };
-  
+
   const fetchToppings = async () => {
     try {
       const response = await fetch('http://localhost/online-ordering-system/api/toppings.php');
-      console.log('Toppings API Response:', response); // Debugging line
+      console.log('Toppings API Response:', response);
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched Toppings:', data); // Debugging line
-        setToppings(Array.isArray(data) ? data : []); // Ensure data is an array
+        console.log('Fetched Toppings:', data);
+        setToppings(Array.isArray(data) ? data : []);
       } else {
         console.error('Failed to fetch toppings');
       }
@@ -53,14 +83,20 @@ const MenuManagement = () => {
     }
   };
 
-  useEffect(() => {
-    fetchPizzas();
-    fetchSizes();
-    fetchToppings();
-  }, []);
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('user'); // Remove user from localStorage
+    window.dispatchEvent(new Event('storage')); // Trigger storage event for other tabs
+    navigate('/login'); // Redirect to login
+  };
 
   return (
     <div style={styles.container}>
+      {/* Welcome message if user is logged in */}
+      {user && <h2 style={styles.welcomeMessage}>Welcome, {user.username}!</h2>}
+
+      <button onClick={handleLogout} style={styles.logoutButton}>Logout</button>
+
       <h1 style={styles.title}>Menu Management</h1>
       <div style={styles.buttonContainer}>
         <button onClick={() => navigate('/create-pizza')} style={styles.button}>
@@ -94,37 +130,37 @@ const MenuManagement = () => {
         </ul>
       </div>
 
-{/* Sizes List */}
-<div style={styles.section}>
-  <h3 style={styles.subSectionTitle}>Sizes</h3>
-  {sizes.length > 0 ? (
-    <ul style={styles.list}>
-      {sizes.map((size) => (
-        <li key={size.id} style={styles.listItem}>
-          {size.size_type}
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p>No sizes available</p> // Graceful fallback
-  )}
-</div>
+      {/* Sizes List */}
+      <div style={styles.section}>
+        <h3 style={styles.subSectionTitle}>Sizes</h3>
+        {sizes.length > 0 ? (
+          <ul style={styles.list}>
+            {sizes.map((size) => (
+              <li key={size.id} style={styles.listItem}>
+                {size.size_type}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No sizes available</p>
+        )}
+      </div>
 
-{/* Toppings List */}
-<div style={styles.section}>
-  <h3 style={styles.subSectionTitle}>Toppings</h3>
-  {toppings.length > 0 ? (
-    <ul style={styles.list}>
-      {toppings.map((topping) => (
-        <li key={topping.id} style={styles.listItem}>
-          {topping.name}
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p>No toppings available</p> // Graceful fallback
-  )}
-</div>
+      {/* Toppings List */}
+      <div style={styles.section}>
+        <h3 style={styles.subSectionTitle}>Toppings</h3>
+        {toppings.length > 0 ? (
+          <ul style={styles.list}>
+            {toppings.map((topping) => (
+              <li key={topping.id} style={styles.listItem}>
+                {topping.name}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No toppings available</p>
+        )}
+      </div>
     </div>
   );
 };
@@ -138,6 +174,11 @@ const styles = {
     padding: '20px',
     backgroundColor: '#fff5e5',
     minHeight: '100vh',
+  },
+  welcomeMessage: {
+    fontSize: '18px',
+    color: '#ff69b4',
+    marginBottom: '20px',
   },
   title: {
     fontSize: '28px',
@@ -157,6 +198,15 @@ const styles = {
     borderRadius: '5px',
     padding: '10px 15px',
     cursor: 'pointer',
+  },
+  logoutButton: {
+    backgroundColor: '#ff69b4',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    padding: '10px 15px',
+    cursor: 'pointer',
+    marginBottom: '20px',
   },
   section: {
     width: '100%',
