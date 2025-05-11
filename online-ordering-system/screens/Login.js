@@ -6,14 +6,28 @@ const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
-    try {
-      await AsyncStorage.setItem('user', JSON.stringify({ email }));
-      navigation.navigate('Menu'); // Navigate to the Menu screen
-    } catch (error) {
-      console.error('Error saving user data:', error);
+const handleLogin = async () => {
+  try {
+    const response = await fetch('http://192.168.1.102/online-ordering-system/api/login.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      await AsyncStorage.setItem('user', JSON.stringify(data));
+      navigation.navigate('Menu');
+    } else {
+      alert(data.message || 'Login failed');
     }
-  };
+  } catch (error) {
+    console.error('Error during login:', error);
+    alert('An error occurred. Please try again.');
+  }
+};
 
   return (
     <View style={styles.container}>

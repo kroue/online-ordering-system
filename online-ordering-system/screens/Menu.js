@@ -3,51 +3,35 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, TextInput, A
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Menu = ({ navigation }) => {
-  const [menuItems] = useState([
-    {
-      id: '1',
-      name: 'Margherita',
-      description: 'Classic cheese and tomato pizza.',
-      price: 10,
-      image: require('../assets/margherita.jpg'),
-      customizable: true,
-    },
-    {
-      id: '2',
-      name: 'Pepperoni',
-      description: 'Topped with pepperoni slices.',
-      price: 12,
-      image: require('../assets/pepperoni.jpg'),
-      customizable: true,
-    },
-    {
-      id: '3',
-      name: 'BBQ Chicken',
-      description: 'BBQ sauce base with chicken toppings.',
-      price: 15,
-      image: require('../assets/bbq_chicken.jpg'),
-      customizable: false,
-    },
-    {
-      id: '4',
-      name: 'Hawaiian',
-      description: 'Pineapple and ham on a cheese base.',
-      price: 14,
-      image: require('../assets/hawaiian.jpg'),
-      customizable: false,
-    },
-  ]);
-
+  const [menuItems, setMenuItems] = useState([]);
+  const [sizes, setSizes] = useState([]);
+  const [toppingsOptions, setToppingsOptions] = useState([]);
   const [cart, setCart] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [customization, setCustomization] = useState({
-    size: 'Medium',
+    size: '',
     crust: 'Normal crust',
     toppings: [],
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const toppingsOptions = ['Extra Cheese', 'Mushrooms', 'Pepperoni', 'Olives', 'Onions'];
+  // Fetch pizzas, sizes, and toppings from backend
+  useEffect(() => {
+    fetch('http://192.168.1.102/online-ordering-system/api/pizzas.php')
+      .then(res => res.json())
+      .then(data => setMenuItems(data))
+      .catch(() => Alert.alert('Error', 'Failed to fetch pizzas'));
+
+    fetch('http://192.168.1.160/online-ordering-system/api/sizes.php')
+      .then(res => res.json())
+      .then(data => setSizes(data.map(s => s.size_type)))
+      .catch(() => Alert.alert('Error', 'Failed to fetch sizes'));
+
+    fetch('http://192.168.1.160/online-ordering-system/api/toppings.php')
+      .then(res => res.json())
+      .then(data => setToppingsOptions(data.map(t => t.name)))
+      .catch(() => Alert.alert('Error', 'Failed to fetch toppings'));
+  }, []);
 
   useEffect(() => {
     navigation.setOptions({
@@ -59,22 +43,27 @@ const Menu = ({ navigation }) => {
     });
   }, [navigation]);
 
-  const addToCart = (item) => {
-    if (item.customizable) {
-      setSelectedItem(item);
-      setIsModalVisible(true); // Open customization modal
-    } else {
-      setCart((prev) => [...prev, { ...item, customization: null }]);
-      Alert.alert('Added to Cart', `${item.name} has been added to your cart.`);
-    }
-  };
+const addToCart = (item) => {
+  if (item.customizable) {
+    setSelectedItem(item);
+    setCustomization({
+      size: sizes[0] || '',
+      crust: 'Normal crust',
+      toppings: [],
+    });
+    setIsModalVisible(true);
+  } else {
+    setCart((prev) => [...prev, { ...item, customization: null }]);
+    Alert.alert('Added to Cart', `${item.name} has been added to your cart.`);
+  }
+};
 
   const handleAddCustomizedItem = () => {
     setCart((prev) => [
       ...prev,
       { ...selectedItem, customization },
     ]);
-    setCustomization({ size: 'Medium', crust: 'Normal crust', toppings: [] });
+    setCustomization({ size: sizes[0] || '', crust: 'Normal crust', toppings: [] });
     setSelectedItem(null);
     setIsModalVisible(false);
     Alert.alert('Added to Cart', `${selectedItem.name} has been customized and added to your cart.`);
@@ -89,21 +78,23 @@ const Menu = ({ navigation }) => {
   };
 
   const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem('user'); // Clear user data
-      navigation.navigate('Login'); // Navigate back to the Login screen
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
+    await AsyncStorage.removeItem('user');
+    navigation.navigate('Login');
   };
 
   const renderMenuItem = ({ item }) => (
     <View style={styles.card}>
-      <Image source={item.image} style={styles.image} />
+      {item.image_url ? (
+        <Image source={{ uri: item.image_url }} style={styles.image} />
+      ) : (
+        <View style={[styles.image, { backgroundColor: '#eee', justifyContent: 'center', alignItems: 'center' }]}>
+          <Text>No Image</Text>
+        </View>
+      )}
       <View style={styles.cardContent}>
         <Text style={styles.itemName}>{item.name}</Text>
         <Text style={styles.itemDescription}>{item.description}</Text>
-        <Text style={styles.itemPrice}>${item.price}</Text>
+        <Text style={styles.itemPrice}>{item.price} PHP</Text>
       </View>
       <TouchableOpacity onPress={() => addToCart(item)} style={styles.addButton}>
         <Text style={styles.addButtonText}>Add</Text>
@@ -131,7 +122,7 @@ const Menu = ({ navigation }) => {
             <Text style={styles.modalTitle}>Customize {selectedItem?.name}</Text>
             <Text style={styles.label}>Size</Text>
             <View style={styles.options}>
-              {['Small', 'Medium', 'Large'].map((size) => (
+              {sizes.map((size) => (
                 <TouchableOpacity
                   key={size}
                   style={[
@@ -195,7 +186,7 @@ const Menu = ({ navigation }) => {
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={() => {
                   setIsModalVisible(false);
-                  setCustomization({ size: 'Medium', crust: 'Normal crust', toppings: [] });
+                  setCustomization({ size: sizes[0] || '', crust: 'Normal crust', toppings: [] });
                 }}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>

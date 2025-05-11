@@ -13,7 +13,7 @@ const Register = ({ navigation }) => {
     }
 
     try {
-      const response = await fetch('http://192.168.1.160/online-ordering-system/api/register.php', {
+      const response = await fetch('http://192.168.1.102/online-ordering-system/api/register.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
