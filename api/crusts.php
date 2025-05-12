@@ -14,12 +14,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
-    $result = $conn->query("SELECT * FROM pizza_sizes");
+    $result = $conn->query("SELECT * FROM crusts");
     if ($result) {
-        $sizes = $result->fetch_all(MYSQLI_ASSOC);
-        echo json_encode($sizes);
+        $crusts = $result->fetch_all(MYSQLI_ASSOC);
+        echo json_encode($crusts);
     } else {
-        echo json_encode(['error' => 'Failed to fetch sizes', 'details' => $conn->error]);
+        echo json_encode(['error' => 'Failed to fetch crusts', 'details' => $conn->error]);
     }
     exit;
 }
@@ -27,18 +27,18 @@ if ($method === 'GET') {
 if ($method === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
 
-    if (!isset($data['size_type'])) {
+    if (!isset($data['type'])) {
         echo json_encode(['error' => 'Invalid input data']);
         exit;
     }
 
-    $size_type = $conn->real_escape_string($data['size_type']);
+    $type = $conn->real_escape_string($data['type']);
 
-    $query = "INSERT INTO pizza_sizes (size_type) VALUES ('$size_type')";
+    $query = "INSERT INTO crusts (type) VALUES ('$type')";
     if ($conn->query($query)) {
-        echo json_encode(['message' => 'Size created successfully']);
+        echo json_encode(['message' => 'Crust type created successfully']);
     } else {
-        echo json_encode(['error' => 'Failed to create size', 'details' => $conn->error]);
+        echo json_encode(['error' => 'Failed to create crust type', 'details' => $conn->error]);
     }
     exit;
 }
@@ -46,19 +46,19 @@ if ($method === 'POST') {
 if ($method === 'PUT') {
     $data = json_decode(file_get_contents('php://input'), true);
 
-    if (!isset($data['id'], $data['size_type'])) {
+    if (!isset($data['id'], $data['type'])) {
         echo json_encode(['error' => 'Invalid input data']);
         exit;
     }
 
     $id = $conn->real_escape_string($data['id']);
-    $size_type = $conn->real_escape_string($data['size_type']);
+    $type = $conn->real_escape_string($data['type']);
 
-    $query = "UPDATE pizza_sizes SET size_type = '$size_type' WHERE id = $id";
+    $query = "UPDATE crusts SET type = '$type' WHERE id = $id";
     if ($conn->query($query)) {
-        echo json_encode(['message' => 'Size updated successfully']);
+        echo json_encode(['message' => 'Crust type updated successfully']);
     } else {
-        echo json_encode(['error' => 'Failed to update size', 'details' => $conn->error]);
+        echo json_encode(['error' => 'Failed to update crust type', 'details' => $conn->error]);
     }
     exit;
 }
@@ -73,11 +73,11 @@ if ($method === 'DELETE') {
 
     $id = $conn->real_escape_string($data['id']);
 
-    $query = "DELETE FROM pizza_sizes WHERE id = $id";
+    $query = "DELETE FROM crusts WHERE id = $id";
     if ($conn->query($query)) {
-        echo json_encode(['message' => 'Size deleted successfully']);
+        echo json_encode(['message' => 'Crust type deleted successfully']);
     } else {
-        echo json_encode(['error' => 'Failed to delete size', 'details' => $conn->error]);
+        echo json_encode(['error' => 'Failed to delete crust type', 'details' => $conn->error]);
     }
     exit;
 }

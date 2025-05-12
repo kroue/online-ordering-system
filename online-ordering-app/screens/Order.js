@@ -50,6 +50,7 @@ const Order = ({ navigation }) => {
     <View style={styles.orderItem}>
       <Text style={styles.itemName}>{item.pizza_name}</Text>
       <Text style={styles.itemDetails}>Size: {item.size}</Text>
+      <Text style={styles.itemDetails}>Crust: {item.crust}</Text> {/* Wrap crust type */}
       <Text style={styles.itemDetails}>Toppings: {item.toppings}</Text>
       <Text style={styles.itemDetails}>Price: {item.price} PHP</Text>
       <Text style={styles.itemStatus}>

@@ -5,47 +5,31 @@ const MenuManagement = () => {
   const [pizzas, setPizzas] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [toppings, setToppings] = useState([]);
-  const [user, setUser] = useState(null); // To hold the logged-in user's data
+  const [crusts, setCrusts] = useState([]);
+  const [editItem, setEditItem] = useState(null);
+  const [editPopupVisible, setEditPopupVisible] = useState(false);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is in localStorage
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
-      navigate('/login'); // Redirect to login if no user is found
+      navigate('/login');
     } else {
-      setUser(JSON.parse(storedUser)); // Set the user state if logged in
+      setUser(JSON.parse(storedUser));
       fetchPizzas();
       fetchSizes();
       fetchToppings();
+      fetchCrusts();
     }
-
-    // Listen for changes in localStorage (to handle logout across tabs)
-    const handleStorageChange = () => {
-      if (!localStorage.getItem('user')) {
-        setUser(null); // Clear user state if logged out
-        navigate('/login'); // Redirect to login
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    // Cleanup event listener on unmount
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
   }, [navigate]);
 
-  // Fetch functions
   const fetchPizzas = async () => {
     try {
       const response = await fetch('http://localhost/online-ordering-system/api/pizzas.php');
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched Pizzas:', data);
         setPizzas(Array.isArray(data) ? data : []);
-      } else {
-        console.error('Failed to fetch pizzas');
       }
     } catch (error) {
       console.error('Error fetching pizzas:', error);
@@ -57,10 +41,7 @@ const MenuManagement = () => {
       const response = await fetch('http://localhost/online-ordering-system/api/sizes.php');
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched Sizes:', data);
         setSizes(Array.isArray(data) ? data : []);
-      } else {
-        console.error('Failed to fetch sizes');
       }
     } catch (error) {
       console.error('Error fetching sizes:', error);
@@ -70,44 +51,74 @@ const MenuManagement = () => {
   const fetchToppings = async () => {
     try {
       const response = await fetch('http://localhost/online-ordering-system/api/toppings.php');
-      console.log('Toppings API Response:', response);
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched Toppings:', data);
         setToppings(Array.isArray(data) ? data : []);
-      } else {
-        console.error('Failed to fetch toppings');
       }
     } catch (error) {
       console.error('Error fetching toppings:', error);
     }
   };
 
-  // Handle logout
-  const handleLogout = () => {
-    localStorage.removeItem('user'); // Remove user from localStorage
-    window.dispatchEvent(new Event('storage')); // Trigger storage event for other tabs
-    navigate('/login'); // Redirect to login
+  const fetchCrusts = async () => {
+    try {
+      const response = await fetch('http://localhost/online-ordering-system/api/crusts.php');
+      if (response.ok) {
+        const data = await response.json();
+        setCrusts(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching crusts:', error);
+    }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
+  const handleEdit = (item, type) => {
+  setEditItem({ ...item, type }); // Store the item and its type (e.g., 'pizzas', 'sizes', etc.)
+  setEditPopupVisible(true); // Show the edit popup
+};
+
+const handleDelete = async (id, type) => {
+  if (!window.confirm('Are you sure you want to delete this item?')) return;
+
+  try {
+    const response = await fetch(`http://localhost/online-ordering-system/api/${type}.php`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    if (response.ok) {
+      alert('Item deleted successfully');
+      // Refresh the data after deletion
+      if (type === 'pizzas') fetchPizzas();
+      if (type === 'sizes') fetchSizes();
+      if (type === 'toppings') fetchToppings();
+      if (type === 'crusts') fetchCrusts();
+    } else {
+      console.error('Failed to delete item');
+    }
+  } catch (error) {
+    console.error('Error deleting item:', error);
+  }
+};
   return (
     <div style={styles.container}>
-      {/* Welcome message if user is logged in */}
       {user && <h2 style={styles.welcomeMessage}>Welcome, {user.username}!</h2>}
-
-      <button onClick={handleLogout} style={styles.logoutButton}>Logout</button>
-
       <h1 style={styles.title}>Menu Management</h1>
+
+      {/* Create Buttons */}
       <div style={styles.buttonContainer}>
-        <button onClick={() => navigate('/create-pizza')} style={styles.button}>
-          Create Pizza
-        </button>
-        <button onClick={() => navigate('/create-size')} style={styles.button}>
-          Create Size
-        </button>
-        <button onClick={() => navigate('/create-topping')} style={styles.button}>
-          Create Topping
-        </button>
+        <button onClick={() => navigate('/create-pizza')} style={styles.button}>Create Pizza</button>
+        <button onClick={() => navigate('/create-size')} style={styles.button}>Create Size</button>
+        <button onClick={() => navigate('/create-topping')} style={styles.button}>Create Topping</button>
+        <button onClick={() => navigate('/create-crust-type')} style={styles.button}>Create Crust Type</button>
       </div>
 
       {/* Pizza List */}
@@ -120,11 +131,10 @@ const MenuManagement = () => {
                 <strong>{pizza.name}</strong> - {pizza.price} PHP
                 <p>{pizza.description}</p>
               </div>
-              <img
-                src={pizza.image_url}
-                alt={pizza.name}
-                style={styles.image}
-              />
+              <div>
+                <button onClick={() => handleEdit(pizza, 'pizzas')} style={styles.button}>Edit</button>
+                <button onClick={() => handleDelete(pizza.id, 'pizzas')} style={styles.deleteButton}>Delete</button>
+              </div>
             </li>
           ))}
         </ul>
@@ -133,33 +143,49 @@ const MenuManagement = () => {
       {/* Sizes List */}
       <div style={styles.section}>
         <h3 style={styles.subSectionTitle}>Sizes</h3>
-        {sizes.length > 0 ? (
-          <ul style={styles.list}>
-            {sizes.map((size) => (
-              <li key={size.id} style={styles.listItem}>
-                {size.size_type}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No sizes available</p>
-        )}
+        <ul style={styles.list}>
+          {sizes.map((size) => (
+            <li key={size.id} style={styles.listItem}>
+              {size.size_type}
+              <div>
+                <button onClick={() => handleEdit(size, 'sizes')} style={styles.button}>Edit</button>
+                <button onClick={() => handleDelete(size.id, 'sizes')} style={styles.deleteButton}>Delete</button>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Toppings List */}
       <div style={styles.section}>
         <h3 style={styles.subSectionTitle}>Toppings</h3>
-        {toppings.length > 0 ? (
-          <ul style={styles.list}>
-            {toppings.map((topping) => (
-              <li key={topping.id} style={styles.listItem}>
-                {topping.name}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No toppings available</p>
-        )}
+        <ul style={styles.list}>
+          {toppings.map((topping) => (
+            <li key={topping.id} style={styles.listItem}>
+              {topping.name}
+              <div>
+                <button onClick={() => handleEdit(topping, 'toppings')} style={styles.button}>Edit</button>
+                <button onClick={() => handleDelete(topping.id, 'toppings')} style={styles.deleteButton}>Delete</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Crusts List */}
+      <div style={styles.section}>
+        <h3 style={styles.subSectionTitle}>Crust Types</h3>
+        <ul style={styles.list}>
+          {crusts.map((crust) => (
+            <li key={crust.id} style={styles.listItem}>
+              {crust.type}
+              <div>
+                <button onClick={() => handleEdit(crust, 'crusts')} style={styles.button}>Edit</button>
+                <button onClick={() => handleDelete(crust.id, 'crusts')} style={styles.deleteButton}>Delete</button>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
@@ -199,15 +225,6 @@ const styles = {
     padding: '10px 15px',
     cursor: 'pointer',
   },
-  logoutButton: {
-    backgroundColor: '#ff69b4',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    padding: '10px 15px',
-    cursor: 'pointer',
-    marginBottom: '20px',
-  },
   section: {
     width: '100%',
     maxWidth: '600px',
@@ -233,13 +250,38 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
-  image: {
-    width: '100px',
-    height: '100px',
-    objectFit: 'cover',
-    borderRadius: '5px',
-    marginLeft: '10px',
-  },
+  logoutButton: {
+  backgroundColor: '#ff4d4d', // Bright red for attention
+  color: '#fff', // White text
+  border: 'none',
+  borderRadius: '5px',
+  padding: '10px 20px',
+  fontSize: '16px',
+  fontWeight: 'bold',
+  cursor: 'pointer',
+  transition: 'background-color 0.3s ease',
+  marginBottom: '20px',
+},
+logoutButtonHover: {
+  backgroundColor: '#e60000', // Darker red on hover
+},
+deleteButton: {
+  backgroundColor: '#ff4d4d', // Bright red for attention
+  color: '#fff', // White text
+  border: 'none',
+  borderRadius: '5px',
+  padding: '10px 15px',
+  fontSize: '14px',
+  fontWeight: 'bold',
+  cursor: 'pointer',
+  transition: 'background-color 0.3s ease',
+  marginLeft: '10px', // Add spacing between buttons
+},
+deleteButtonHover: {
+  backgroundColor: '#e60000', // Darker red on hover
+},
 };
+
+
 
 export default MenuManagement;

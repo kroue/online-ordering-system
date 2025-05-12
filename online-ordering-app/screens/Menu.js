@@ -6,6 +6,7 @@ const Menu = ({ navigation }) => {
   const [menuItems, setMenuItems] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [toppingsOptions, setToppingsOptions] = useState([]);
+  const [crustTypes, setCrustTypes] = useState([]); // State for crust types
   const [cart, setCart] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [customization, setCustomization] = useState({
@@ -15,6 +16,7 @@ const Menu = ({ navigation }) => {
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('Card'); // Default to Card Payment
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: '',
     expiryDate: '',
@@ -37,6 +39,10 @@ const Menu = ({ navigation }) => {
       .then(res => res.json())
       .then(data => setToppingsOptions(data.map(t => t.name)))
       .catch(() => Alert.alert('Error', 'Failed to fetch toppings'));
+    fetch('http://192.168.1.160/online-ordering-system/api/crusts.php')
+    .then((res) => res.json())
+    .then((data) => setCrustTypes(data.map((c) => c.type))) // Map to extract crust type
+    .catch(() => Alert.alert('Error', 'Failed to fetch crust types'));
   }, []);
 
   useEffect(() => {
@@ -49,14 +55,15 @@ const Menu = ({ navigation }) => {
     });
   }, [navigation]);
 
-  const addToCart = (item) => {
-    setSelectedItem(item);
-    setCustomization({
-      size: sizes[0] || '', // Default to the first size
-      toppings: [], // Start with no toppings selected
-    });
-    setIsModalVisible(true);
-  };
+const addToCart = (item) => {
+  setSelectedItem(item);
+  setCustomization({
+    size: sizes[0] || '', // Default to the first size
+    crust: crustTypes[0] || '', // Default to the first crust type
+    toppings: [], // Start with no toppings selected
+  });
+  setIsModalVisible(true);
+};
 
   const handleAddCustomizedItem = () => {
     setCart((prev) => [
@@ -77,46 +84,58 @@ const Menu = ({ navigation }) => {
     setIsPaymentModalVisible(true); // Show the payment popup
   };
 
-  const handlePayment = async () => {
-    // Validate payment details
+const handlePayment = async () => {
+  if (paymentMethod === 'Card') {
     if (!paymentDetails.cardNumber || !paymentDetails.expiryDate || !paymentDetails.cvv) {
-      Alert.alert('Error', 'Please fill in all payment details.');
+      Alert.alert('Error', 'Please fill in all card payment details.');
       return;
     }
-
-    try {
-      const response = await fetch('http://192.168.1.160/online-ordering-system/api/orders.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(
-          cart.map((item) => ({
-            pizza_name: item.name,
-            size: item.customization.size,
-            toppings: item.customization.toppings, // Ensure this is an array of strings
-            price: item.price,
-            status: 'Preparing',
-            user_id: 1, // Replace with the actual user ID
-          }))
-        ),
-      });
-
-      if (response.ok) {
-        Alert.alert('Payment Successful', 'Your order has been placed!');
-        setCart([]); // Clear the cart
-        setIsPaymentModalVisible(false); // Close the payment modal
-        navigation.navigate('Order'); // Navigate to the Order screen
-      } else {
-        const errorData = await response.json();
-        console.error('Order creation failed:', errorData);
-        Alert.alert('Error', 'Failed to create order.');
-      }
-    } catch (error) {
-      console.error('Error creating order:', error);
-      Alert.alert('Error', 'Something went wrong.');
+  } else if (paymentMethod === 'COD') {
+    if (!paymentDetails.address) {
+      Alert.alert('Error', 'Please provide your address for Cash on Delivery.');
+      return;
     }
-  };
+  }
+
+  try {
+    const response = await fetch('http://192.168.1.160/online-ordering-system/api/orders.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(
+        cart.map((item) => ({
+          pizza_name: item.name,
+          size: item.customization.size,
+          crust: item.customization.crust,
+          toppings: item.customization.toppings,
+          price: item.price,
+          status: paymentMethod === 'Card' ? 'Preparing' : 'Pending COD',
+        }))
+      ),
+    });
+
+    if (response.ok) {
+      Alert.alert('Payment Successful', 'Your order has been placed!');
+      const orderDetails = cart.map((item) => ({
+        pizza_name: item.name,
+        size: item.customization.size,
+        crust: item.customization.crust,
+        toppings: item.customization.toppings,
+      }));
+      setCart([]); // Clear the cart
+      setIsPaymentModalVisible(false); // Close the payment modal
+      navigation.navigate('Order', { orders: orderDetails }); // Navigate to Order.js with order details
+    } else {
+      const errorData = await response.json();
+      console.error('Order creation failed:', errorData);
+      Alert.alert('Error', 'Failed to create order.');
+    }
+  } catch (error) {
+    console.error('Error creating order:', error);
+    Alert.alert('Error', 'Something went wrong.');
+  }
+};
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('user');
@@ -156,46 +175,96 @@ const Menu = ({ navigation }) => {
         <Text style={styles.buttonText}>Proceed to Payment</Text>
       </TouchableOpacity>
 
-      {/* Payment Modal */}
-      <Modal visible={isPaymentModalVisible} animationType="slide" transparent>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Payment Details</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Card Number"
-              keyboardType="numeric"
-              value={paymentDetails.cardNumber}
-              onChangeText={(text) => setPaymentDetails((prev) => ({ ...prev, cardNumber: text }))}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Expiry Date (MM/YY)"
-              value={paymentDetails.expiryDate}
-              onChangeText={(text) => setPaymentDetails((prev) => ({ ...prev, expiryDate: text }))}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="CVV"
-              keyboardType="numeric"
-              secureTextEntry
-              value={paymentDetails.cvv}
-              onChangeText={(text) => setPaymentDetails((prev) => ({ ...prev, cvv: text }))}
-            />
-            <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.modalButton} onPress={handlePayment}>
-                <Text style={styles.modalButtonText}>Pay</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setIsPaymentModalVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+{/* Payment Modal */}
+<Modal visible={isPaymentModalVisible} animationType="slide" transparent>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>Payment</Text>
+
+      {/* Payment Method Switch */}
+      <View style={styles.toggleContainer}>
+        <TouchableOpacity
+          style={[
+            styles.toggleButton,
+            paymentMethod === 'Card' && styles.selectedToggle,
+          ]}
+          onPress={() => setPaymentMethod('Card')}
+        >
+          <Text style={styles.toggleText}>Card</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.toggleButton,
+            paymentMethod === 'COD' && styles.selectedToggle,
+          ]}
+          onPress={() => setPaymentMethod('COD')}
+        >
+          <Text style={styles.toggleText}>Cash on Delivery</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Card Payment Fields */}
+      {paymentMethod === 'Card' && (
+        <>
+          <TextInput
+            style={styles.input}
+            placeholder="Card Number"
+            keyboardType="numeric"
+            value={paymentDetails.cardNumber}
+            onChangeText={(text) =>
+              setPaymentDetails((prev) => ({ ...prev, cardNumber: text }))
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Expiry Date (MM/YY)"
+            value={paymentDetails.expiryDate}
+            onChangeText={(text) =>
+              setPaymentDetails((prev) => ({ ...prev, expiryDate: text }))
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="CVV"
+            keyboardType="numeric"
+            secureTextEntry
+            value={paymentDetails.cvv}
+            onChangeText={(text) =>
+              setPaymentDetails((prev) => ({ ...prev, cvv: text }))
+            }
+          />
+        </>
+      )}
+
+      {/* COD Address Field */}
+      {paymentMethod === 'COD' && (
+        <TextInput
+          style={styles.input}
+          placeholder="Delivery Address"
+          value={paymentDetails.address}
+          onChangeText={(text) =>
+            setPaymentDetails((prev) => ({ ...prev, address: text }))
+          }
+        />
+      )}
+
+      <View style={styles.modalButtons}>
+        <TouchableOpacity
+  style={styles.modalButton}
+  onPress={handlePayment} // Associate the button with the handlePayment function
+>
+  <Text style={styles.modalButtonText}>Confirm</Text>
+</TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.modalButton, styles.cancelButton]}
+          onPress={() => setIsPaymentModalVisible(false)}
+        >
+          <Text style={styles.modalButtonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</Modal>
 
       {/* Customization Modal */}
       <Modal visible={isModalVisible} animationType="slide" transparent>
@@ -241,6 +310,22 @@ const Menu = ({ navigation }) => {
                 </TouchableOpacity>
               ))}
             </View>
+{/* Crust Type Selection */}
+<Text style={styles.label}>Crust Type</Text>
+<View style={styles.options}>
+  {crustTypes.map((crust) => (
+    <TouchableOpacity
+      key={crust}
+      style={[
+        styles.optionButton,
+        customization.crust === crust && styles.selectedOption,
+      ]}
+      onPress={() => setCustomization((prev) => ({ ...prev, crust }))}
+    >
+      <Text style={styles.optionText}>{crust}</Text>
+    </TouchableOpacity>
+  ))}
+</View>
             {/* Modal Buttons */}
             <View style={styles.modalButtons}>
               <TouchableOpacity
@@ -416,6 +501,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  toggleContainer: {
+  flexDirection: 'row',
+  marginBottom: 20,
+},
+toggleButton: {
+  flex: 1,
+  padding: 10,
+  borderRadius: 5,
+  borderWidth: 1,
+  borderColor: '#ddd',
+  alignItems: 'center',
+  marginHorizontal: 5,
+},
+selectedToggle: {
+  backgroundColor: '#ff69b4',
+  borderColor: '#ff69b4',
+},
+toggleText: {
+  color: '#fff',
+  fontWeight: 'bold',
+},
 });
 
 export default Menu;

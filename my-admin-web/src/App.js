@@ -10,6 +10,7 @@ import CreatePizza from './CreatePizza';
 import CreateSize from './CreateSize';
 import CreateTopping from './CreateTopping';
 import VerifyEmail from './VerifyEmail';
+import CreateCrustType from './CreateCrustType';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -83,6 +84,13 @@ function App() {
             <UserManagement />
           </SidebarLayout>
         ) : <Navigate to="/login" />} />
+        <Route path="/create-crust-type" element={isLoggedIn ? (
+          <SidebarLayout onLogout={handleLogout} userEmail={userEmail}>
+            <CreateCrustType />
+          </SidebarLayout>
+        ) : <Navigate to="/login" />} />
+
+        {/* Redirect any other routes to Login */}
       </Routes>
     </Router>
   );

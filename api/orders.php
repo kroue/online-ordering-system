@@ -65,7 +65,7 @@ if ($method === 'POST') {
     }
 
     foreach ($input as $order) {
-        if (!isset($order['pizza_name'], $order['size'], $order['toppings'], $order['price'], $order['status'])) {
+        if (!isset($order['pizza_name'], $order['size'], $order['crust'], $order['toppings'], $order['price'], $order['status'])) {
             echo json_encode(['error' => 'Invalid input data for one or more orders.', 'received' => $order]);
             http_response_code(400);
             exit;
@@ -73,11 +73,12 @@ if ($method === 'POST') {
 
         $pizza_name = $conn->real_escape_string($order['pizza_name']);
         $size = $conn->real_escape_string($order['size']);
+        $crust = $conn->real_escape_string($order['crust']);
         $toppings = $conn->real_escape_string(implode(', ', $order['toppings']));
         $price = $conn->real_escape_string($order['price']);
         $status = $conn->real_escape_string($order['status']);
 
-        $query = "INSERT INTO orders (pizza_name, size, toppings, price, status) VALUES ('$pizza_name', '$size', '$toppings', '$price', '$status')";
+        $query = "INSERT INTO orders (pizza_name, size, crust, toppings, price, status) VALUES ('$pizza_name', '$size', '$crust', '$toppings', '$price', '$status')";
         if (!$conn->query($query)) {
             echo json_encode(['error' => 'Failed to create order', 'details' => $conn->error]);
             http_response_code(500);
@@ -88,7 +89,6 @@ if ($method === 'POST') {
     echo json_encode(['message' => 'Orders created successfully']);
     exit;
 }
-
 if ($method === 'DELETE') {
     $query = "DELETE FROM orders";
     if ($conn->query($query)) {

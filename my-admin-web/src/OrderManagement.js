@@ -54,35 +54,36 @@ const OrderManagement = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Order Management</h1>
-      <ul style={styles.list}>
-        {orders.map((order) => (
-          <li key={order.id} style={styles.listItem}>
-            <div>
-              <p><strong>User Email:</strong> {order.user_email}</p>
-              <p><strong>Pizza Name:</strong> {order.pizza_name}</p>
-              <p><strong>Size:</strong> {order.size}</p>
-              <p><strong>Toppings:</strong> {order.toppings}</p>
-              <p><strong>Price:</strong> {order.price} PHP</p>
-              <p>
-                <strong>Status:</strong>{' '}
-                <span style={order.status === 'Ready' ? styles.ready : styles.preparing}>
-                  {order.status}
-                </span>
-              </p>
-            </div>
-            <button
-              onClick={() => toggleOrderStatus(order.id, order.status)}
-              style={styles.button}
-            >
-              {order.status === 'Ready' ? 'Mark as Preparing' : 'Mark as Ready'}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+  <div style={styles.container}>
+    <h1 style={styles.title}>Order Management</h1>
+    <ul style={styles.list}>
+      {orders.map((order) => (
+        <li key={order.id} style={styles.listItem}>
+          <div>
+            <p><strong>User Email:</strong> {order.user_email}</p>
+            <p><strong>Pizza Name:</strong> {order.pizza_name}</p>
+            <p><strong>Size:</strong> {order.size}</p>
+            <p><strong>Crust:</strong> {order.crust}</p> {/* Display crust type */}
+            <p><strong>Toppings:</strong> {order.toppings}</p>
+            <p><strong>Price:</strong> {order.price} PHP</p>
+            <p>
+              <strong>Status:</strong>{' '}
+              <span style={order.status === 'Ready' ? styles.ready : styles.preparing}>
+                {order.status}
+              </span>
+            </p>
+          </div>
+          <button
+            onClick={() => toggleOrderStatus(order.id, order.status)}
+            style={styles.button}
+          >
+            {order.status === 'Ready' ? 'Mark as Preparing' : 'Mark as Ready'}
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 };
 
 const styles = {
