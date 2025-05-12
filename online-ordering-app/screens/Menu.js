@@ -14,10 +14,16 @@ const Menu = ({ navigation }) => {
     toppings: [],
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+  });
 
   // Fetch pizzas, sizes, and toppings from backend
   useEffect(() => {
-    fetch('http://192.168.1.102/online-ordering-system/api/pizzas.php')
+    fetch('http://192.168.1.160/online-ordering-system/api/pizzas.php')
       .then(res => res.json())
       .then(data => setMenuItems(data))
       .catch(() => Alert.alert('Error', 'Failed to fetch pizzas'));
@@ -43,38 +49,73 @@ const Menu = ({ navigation }) => {
     });
   }, [navigation]);
 
-const addToCart = (item) => {
-  if (item.customizable) {
+  const addToCart = (item) => {
     setSelectedItem(item);
     setCustomization({
-      size: sizes[0] || '',
-      crust: 'Normal crust',
-      toppings: [],
+      size: sizes[0] || '', // Default to the first size
+      toppings: [], // Start with no toppings selected
     });
     setIsModalVisible(true);
-  } else {
-    setCart((prev) => [...prev, { ...item, customization: null }]);
-    Alert.alert('Added to Cart', `${item.name} has been added to your cart.`);
-  }
-};
+  };
 
   const handleAddCustomizedItem = () => {
     setCart((prev) => [
       ...prev,
       { ...selectedItem, customization },
     ]);
-    setCustomization({ size: sizes[0] || '', crust: 'Normal crust', toppings: [] });
+    setCustomization({ size: sizes[0] || '', toppings: [] }); // Reset customization
     setSelectedItem(null);
-    setIsModalVisible(false);
+    setIsModalVisible(false); // Close the modal
     Alert.alert('Added to Cart', `${selectedItem.name} has been customized and added to your cart.`);
   };
 
-  const handleOrder = () => {
+  const handleProceedToPayment = () => {
     if (cart.length === 0) {
       alert('Please add at least one item to your cart.');
       return;
     }
-    navigation.navigate('Order', { cart, setCart });
+    setIsPaymentModalVisible(true); // Show the payment popup
+  };
+
+  const handlePayment = async () => {
+    // Validate payment details
+    if (!paymentDetails.cardNumber || !paymentDetails.expiryDate || !paymentDetails.cvv) {
+      Alert.alert('Error', 'Please fill in all payment details.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://192.168.1.160/online-ordering-system/api/orders.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+          cart.map((item) => ({
+            pizza_name: item.name,
+            size: item.customization.size,
+            toppings: item.customization.toppings, // Ensure this is an array of strings
+            price: item.price,
+            status: 'Preparing',
+            user_id: 1, // Replace with the actual user ID
+          }))
+        ),
+      });
+
+      if (response.ok) {
+        Alert.alert('Payment Successful', 'Your order has been placed!');
+        setCart([]); // Clear the cart
+        setIsPaymentModalVisible(false); // Close the payment modal
+        navigation.navigate('Order'); // Navigate to the Order screen
+      } else {
+        const errorData = await response.json();
+        console.error('Order creation failed:', errorData);
+        Alert.alert('Error', 'Failed to create order.');
+      }
+    } catch (error) {
+      console.error('Error creating order:', error);
+      Alert.alert('Error', 'Something went wrong.');
+    }
   };
 
   const handleLogout = async () => {
@@ -111,15 +152,57 @@ const addToCart = (item) => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.menuList}
       />
-      <TouchableOpacity style={styles.button} onPress={handleOrder}>
-        <Text style={styles.buttonText}>Proceed to Order</Text>
+      <TouchableOpacity style={styles.button} onPress={handleProceedToPayment}>
+        <Text style={styles.buttonText}>Proceed to Payment</Text>
       </TouchableOpacity>
+
+      {/* Payment Modal */}
+      <Modal visible={isPaymentModalVisible} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Payment Details</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Card Number"
+              keyboardType="numeric"
+              value={paymentDetails.cardNumber}
+              onChangeText={(text) => setPaymentDetails((prev) => ({ ...prev, cardNumber: text }))}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Expiry Date (MM/YY)"
+              value={paymentDetails.expiryDate}
+              onChangeText={(text) => setPaymentDetails((prev) => ({ ...prev, expiryDate: text }))}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="CVV"
+              keyboardType="numeric"
+              secureTextEntry
+              value={paymentDetails.cvv}
+              onChangeText={(text) => setPaymentDetails((prev) => ({ ...prev, cvv: text }))}
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.modalButton} onPress={handlePayment}>
+                <Text style={styles.modalButtonText}>Pay</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setIsPaymentModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* Customization Modal */}
       <Modal visible={isModalVisible} animationType="slide" transparent>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Customize {selectedItem?.name}</Text>
+            {/* Size Selection */}
             <Text style={styles.label}>Size</Text>
             <View style={styles.options}>
               {sizes.map((size) => (
@@ -135,23 +218,7 @@ const addToCart = (item) => {
                 </TouchableOpacity>
               ))}
             </View>
-
-            <Text style={styles.label}>Crust</Text>
-            <View style={styles.options}>
-              {['Normal crust', 'Thin crust', 'Stuffed crust'].map((crust) => (
-                <TouchableOpacity
-                  key={crust}
-                  style={[
-                    styles.optionButton,
-                    customization.crust === crust && styles.selectedOption,
-                  ]}
-                  onPress={() => setCustomization((prev) => ({ ...prev, crust }))}
-                >
-                  <Text style={styles.optionText}>{crust}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
+            {/* Toppings Selection */}
             <Text style={styles.label}>Toppings</Text>
             <View style={styles.options}>
               {toppingsOptions.map((topping) => (
@@ -174,7 +241,7 @@ const addToCart = (item) => {
                 </TouchableOpacity>
               ))}
             </View>
-
+            {/* Modal Buttons */}
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={styles.modalButton}
@@ -186,7 +253,7 @@ const addToCart = (item) => {
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={() => {
                   setIsModalVisible(false);
-                  setCustomization({ size: sizes[0] || '', crust: 'Normal crust', toppings: [] });
+                  setCustomization({ size: sizes[0] || '', toppings: [] });
                 }}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>

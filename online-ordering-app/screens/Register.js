@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Register = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -13,7 +12,7 @@ const Register = ({ navigation }) => {
     }
 
     try {
-      const response = await fetch('http://192.168.1.102/online-ordering-system/api/register.php', {
+      const response = await fetch('http://192.168.1.160/online-ordering-system/api/register.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -21,10 +20,7 @@ const Register = ({ navigation }) => {
         body: JSON.stringify({ email, password }),
       });
 
-      console.log('Raw response:', response); // For debugging status code etc.
-
       const result = await response.json();
-      console.log('Parsed response:', result); // See if it's structured correctly
 
       if (result.success) {
         Alert.alert('Success', result.message, [

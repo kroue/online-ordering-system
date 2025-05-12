@@ -34,22 +34,10 @@ if ($check->num_rows > 0) {
     exit();
 }
 
-// Generate a verification code
-$verification_code = rand(100000, 999999);
-
 // Insert new user into database
-$sql = "INSERT INTO users (email, password, verification_code) VALUES ('$email', '$password', '$verification_code')";
+$sql = "INSERT INTO users (email, password) VALUES ('$email', '$password')";
 if ($conn->query($sql)) {
-    // Send verification email
-    $subject = "Verify Your Email";
-    $message = "Your verification code is: $verification_code";
-    $headers = "From: no-reply@yourdomain.com";
-
-    if (mail($email, $subject, $message, $headers)) {
-        echo json_encode(["success" => true, "message" => "Registration successful. Verification email sent."]);
-    } else {
-        echo json_encode(["success" => false, "message" => "Registration successful, but failed to send verification email."]);
-    }
+    echo json_encode(["success" => true, "message" => "Registration successful."]);
 } else {
     echo json_encode(["success" => false, "message" => "Registration failed."]);
 }
