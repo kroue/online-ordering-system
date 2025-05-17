@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 12, 2025 at 05:50 PM
+-- Generation Time: May 17, 2025 at 09:07 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -77,8 +77,16 @@ CREATE TABLE `pizzas` (
 --
 
 INSERT INTO `pizzas` (`id`, `name`, `description`, `price`, `image_url`) VALUES
-(3, 'Peperonni', 'Pepperoni is an American variety of spicy salami made from cured pork and beef seasoned with paprika and chili peppers.', 299.00, 'https://cdn.romanspizza.co.za/images/root/v2/pizza/pizza-pepperoni-deluxe-pan.png'),
-(4, 'Hawaiian', 'Hawaiian pizza is a pizza invented in Canada, topped with pineapple, tomato sauce, mozzarella cheese, and either ham or bacon.', 349.00, 'https://cdn.romanspizza.co.za/images/root/v2/pizza/pizza-hawaiian-pan.png');
+(13, 'Margherita', 'Classic simplicity with fresh flavors', 399.00, 'https://i.pinimg.com/736x/57/e7/a1/57e7a19334571946391a7430fcb86202.jpg'),
+(14, 'Pepperoni Feast', 'Bold and meaty for pepperoni lovers', 379.00, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZXgk-eyNjthiEDhXizyJI420bF9JlGxFx9Q&s'),
+(15, 'Meat Lover’s', 'Meat Lover’s A carnivore\'s dream come true', 429.00, 'https://cookingwithchefbryan.com/wp-content/uploads/2022/01/Meat-Lovers-Pizza.jpg'),
+(16, 'Hawaiian Delight', 'Sweet and savory tropical fusion', 319.00, 'https://goodtimespizzasaginaw.com/wp-content/uploads/2021/01/Hawaiian-Delight.png'),
+(17, 'BBQ Chicken', 'Smoky and tangy with a twist', 399.00, 'https://breadboozebacon.com/wp-content/uploads/2023/05/BBQ-Chicken-Pizza-SQUARE.jpg'),
+(18, 'Veggie Supreme', 'A garden-fresh vegetarian favorite', 389.00, 'https://www.thursdaynightpizza.com/wp-content/uploads/2022/06/veggie-pizza-side-view-out-of-oven-720x480.png'),
+(19, 'Four Cheese', 'Rich, creamy, and cheesy', 379.00, 'https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480_1_5x/img/recipe/ras/Assets/123CBE4C-517C-4401-A668-0D0884F45883/Derivates/936C2A3A-0418-4A9A-B116-E338CABE0650.jpg'),
+(20, 'Truffle Mushroom', 'Gourmet and earthy flavor', 379.00, 'https://eurorich.ph/cdn/shop/articles/APC_0088.jpg?v=1665678123'),
+(21, 'Spicy Inferno', 'For the heat seekers', 389.00, 'https://www.silviocicchi.com/pizzachef/wp-content/uploads/2015/04/pizzainferno.jpg'),
+(22, ' Mediterranean', 'Inspired by sun-drenched coasts', 349.00, 'https://www.foodiecrush.com/wp-content/uploads/2022/01/Mediterranean-Pizza-foodiecrush.com-63.jpg');
 
 -- --------------------------------------------------------
 
@@ -96,9 +104,10 @@ CREATE TABLE `pizza_sizes` (
 --
 
 INSERT INTO `pizza_sizes` (`id`, `size_type`) VALUES
-(2, 'Medium'),
-(3, 'Small'),
-(4, 'Large');
+(6, 'Small'),
+(7, 'Medium'),
+(8, 'Large'),
+(9, 'Extra Large');
 
 -- --------------------------------------------------------
 
@@ -139,10 +148,9 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `email`, `password`, `created_at`) VALUES
 (5, 'test@test.com', '$2y$10$6Z1KaCh5b7G0nVS1ADD8HedIgGV4BqEs2YOcxeH6QwKkH2WJODS6u', '2025-05-05 20:54:17'),
-(6, 'test2@test.com', '$2y$10$uBr/5lGoON5HavdVr1vUFurHG0ncCso.7ZQWIGXxbwiRTjcOP9eBO', '2025-05-12 12:29:51'),
-(7, 'test3@test.com', '$2y$10$mukY3rmC/b4HFGOtXcgsV.MXEyf47enW4o4qNmp4eztJc6saszh8O', '2025-05-12 12:39:12'),
 (8, 'vksab78@gmail.com', '$2y$10$U6xE.RkLsBRZGOKSEG1wMOI2OYWRNydFddodO3zstUWOuP7yG2NgC', '2025-05-12 12:39:58'),
-(9, 'robbygabutan@gmail.com', '$2y$10$hNXvReBI810a.aykDvW/CekjDpTCAMtiwxnTpIREqEDQhS/6nsiu2', '2025-05-12 13:33:49');
+(9, 'robbygabutan@gmail.com', '$2y$10$hNXvReBI810a.aykDvW/CekjDpTCAMtiwxnTpIREqEDQhS/6nsiu2', '2025-05-12 13:33:49'),
+(12, 'rgabutan08@gmail.com', '$2y$10$D.eHjPtf5Aqtqf0i7Aocj.dIL1NHZtgtABgXxXevzvxRJt1KkL1ni', '2025-05-15 04:10:01');
 
 --
 -- Indexes for dumped tables
@@ -199,19 +207,19 @@ ALTER TABLE `crusts`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `pizzas`
 --
 ALTER TABLE `pizzas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `pizza_sizes`
 --
 ALTER TABLE `pizza_sizes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `toppings`
@@ -223,7 +231,7 @@ ALTER TABLE `toppings`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
