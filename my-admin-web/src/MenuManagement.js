@@ -310,6 +310,11 @@ const MenuManagement = () => {
               <div>
                 <strong>{pizza.name}</strong> - {pizza.price} PHP
                 <p>{pizza.description}</p>
+                  <img
+                    src={pizza.image_url}
+                    alt={pizza.name}
+                    style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8, marginRight: 10 }}
+                  />
               </div>
               <div>
                 <button onClick={() => handleEdit(pizza, 'pizzas')} style={styles.button}>Edit</button>
