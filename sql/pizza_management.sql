@@ -104,10 +104,9 @@ CREATE TABLE `pizza_sizes` (
 --
 
 INSERT INTO `pizza_sizes` (`id`, `size_type`) VALUES
-(6, 'Small'),
-(7, 'Medium'),
-(8, 'Large'),
-(9, 'Extra Large');
+(6, 'Regular 9"'),
+(7, 'Large 12"'),
+(8, 'Party 15"'),
 
 -- --------------------------------------------------------
 
@@ -147,7 +146,6 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `email`, `password`, `created_at`) VALUES
-(5, 'test@test.com', '$2y$10$6Z1KaCh5b7G0nVS1ADD8HedIgGV4BqEs2YOcxeH6QwKkH2WJODS6u', '2025-05-05 20:54:17'),
 (8, 'vksab78@gmail.com', '$2y$10$U6xE.RkLsBRZGOKSEG1wMOI2OYWRNydFddodO3zstUWOuP7yG2NgC', '2025-05-12 12:39:58'),
 (9, 'robbygabutan@gmail.com', '$2y$10$hNXvReBI810a.aykDvW/CekjDpTCAMtiwxnTpIREqEDQhS/6nsiu2', '2025-05-12 13:33:49'),
 (12, 'rgabutan08@gmail.com', '$2y$10$D.eHjPtf5Aqtqf0i7Aocj.dIL1NHZtgtABgXxXevzvxRJt1KkL1ni', '2025-05-15 04:10:01');
