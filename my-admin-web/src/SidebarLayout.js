@@ -35,8 +35,8 @@ const styles = {
   },
   sidebar: {
     width: '250px',
-    backgroundColor: '#ff69b4', // Pink
-    color: '#fff',
+    backgroundColor: '#000000', // Black
+    color: '#ffffff', // White
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -53,13 +53,13 @@ const styles = {
     width: '100%',
   },
   navLink: {
-    color: '#fff',
+    color: '#ffffff', // White
     textDecoration: 'none',
     padding: '10px 15px',
     borderRadius: '5px',
     marginBottom: '10px',
     textAlign: 'center',
-    backgroundColor: '#ff85c0', // Lighter pink
+    backgroundColor: '#000000', // Black
     fontWeight: 'bold',
     cursor: 'pointer',
   },
@@ -68,9 +68,9 @@ const styles = {
   },
   logoutButton: {
     marginTop: 'auto',
-    backgroundColor: '#fff',
-    color: '#ff69b4', // Pink
-    border: 'none',
+    backgroundColor: '#ffffff', // White
+    color: '#000000', // Black
+    border: '1px solid #000000', // Black border
     borderRadius: '5px',
     padding: '10px 15px',
     cursor: 'pointer',
@@ -79,7 +79,7 @@ const styles = {
   content: {
     flex: 1,
     padding: '20px',
-    backgroundColor: '#ffe4e1', // Light pink
+    backgroundColor: '#ffffff', // White
   },
 };
 

@@ -93,13 +93,13 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '20px',
-    backgroundColor: '#fff5e5',
+    backgroundColor: '#ffffff', // White
     minHeight: '100vh',
   },
   title: {
     fontSize: '28px',
     fontWeight: 'bold',
-    color: '#ff69b4',
+    color: '#000000', // Black
     marginBottom: '20px',
   },
   list: {
@@ -114,18 +114,17 @@ const styles = {
     alignItems: 'flex-start',
     padding: '15px',
     marginBottom: '10px',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff', // White
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
   button: {
-    backgroundColor: '#ff69b4',
-    color: '#fff',
+    backgroundColor: '#000000', // Black
+    color: '#ffffff', // White
     border: 'none',
     borderRadius: '5px',
     padding: '5px 10px',
     cursor: 'pointer',
-    alignSelf: 'center',
   },
   ready: {
     color: 'green',

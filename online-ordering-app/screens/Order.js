@@ -7,7 +7,7 @@ const Order = ({ navigation }) => {
 
   useEffect(() => {
     const fetchOrders = () => {
-      fetch('http://192.168.1.160/online-ordering-system/api/orders.php')
+      fetch('http://192.168.1.19/online-ordering-system/api/orders.php')
         .then((res) => res.json())
         .then((data) => {
           setOrders(data);
@@ -26,7 +26,7 @@ const Order = ({ navigation }) => {
 
   const handleFinishOrder = async () => {
     try {
-      const response = await fetch('http://192.168.1.160/online-ordering-system/api/orders.php', {
+      const response = await fetch('http://192.168.1.19/online-ordering-system/api/orders.php', {
         method: 'DELETE',
       });
 

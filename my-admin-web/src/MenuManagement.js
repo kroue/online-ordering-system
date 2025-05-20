@@ -378,7 +378,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '20px',
-    backgroundColor: '#fff5e5',
+    backgroundColor: '#ffffff', // White
     minHeight: '100vh',
   },
   welcomeMessage: {
@@ -389,7 +389,7 @@ const styles = {
   title: {
     fontSize: '28px',
     fontWeight: 'bold',
-    color: '#ff69b4',
+    color: '#000000', // Black
     marginBottom: '20px',
   },
   buttonContainer: {
@@ -398,8 +398,8 @@ const styles = {
     marginBottom: '20px',
   },
   button: {
-    backgroundColor: '#ff69b4',
-    color: '#fff',
+    backgroundColor: '#000000', // Black
+    color: '#ffffff', // White
     border: 'none',
     borderRadius: '5px',
     padding: '10px 15px',
@@ -426,7 +426,7 @@ const styles = {
     alignItems: 'center',
     padding: '10px 15px',
     marginBottom: '10px',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff', // White
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
@@ -466,8 +466,8 @@ const styles = {
     cursor: 'pointer',
   },
   deleteButton: {
-    backgroundColor: '#ff4d4d',
-    color: '#fff',
+    backgroundColor: '#ff4d4d', // Red for delete
+    color: '#ffffff', // White
     border: 'none',
     borderRadius: '5px',
     padding: '10px 15px',

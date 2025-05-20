@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, TextInput, Alert, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons'; // Add this import
 
 const Menu = ({ navigation }) => {
   const [menuItems, setMenuItems] = useState([]);
@@ -25,21 +26,21 @@ const Menu = ({ navigation }) => {
 
   // Fetch pizzas, sizes, and toppings from backend
   useEffect(() => {
-    fetch('http://192.168.1.160/online-ordering-system/api/pizzas.php')
+    fetch('http://192.168.1.19/online-ordering-system/api/pizzas.php')
       .then(res => res.json())
       .then(data => setMenuItems(data))
       .catch(() => Alert.alert('Error', 'Failed to fetch pizzas'));
 
-    fetch('http://192.168.1.160/online-ordering-system/api/sizes.php')
+    fetch('http://192.168.1.19/online-ordering-system/api/sizes.php')
       .then(res => res.json())
       .then(data => setSizes(data.map(s => s.size_type)))
       .catch(() => Alert.alert('Error', 'Failed to fetch sizes'));
 
-    fetch('http://192.168.1.160/online-ordering-system/api/toppings.php')
+    fetch('http://192.168.1.19/online-ordering-system/api/toppings.php')
       .then(res => res.json())
       .then(data => setToppingsOptions(data.map(t => t.name)))
       .catch(() => Alert.alert('Error', 'Failed to fetch toppings'));
-    fetch('http://192.168.1.160/online-ordering-system/api/crusts.php')
+    fetch('http://192.168.1.19/online-ordering-system/api/crusts.php')
     .then((res) => res.json())
     .then((data) => setCrustTypes(data.map((c) => c.type))) // Map to extract crust type
     .catch(() => Alert.alert('Error', 'Failed to fetch crust types'));
@@ -48,9 +49,17 @@ const Menu = ({ navigation }) => {
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Profile')}
+            style={{ marginRight: 15 }}
+          >
+            <Ionicons name="person-circle-outline" size={30} color="#ff69b4" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
       ),
     });
   }, [navigation]);
@@ -98,7 +107,7 @@ const handlePayment = async () => {
   }
 
   try {
-    const response = await fetch('http://192.168.1.160/online-ordering-system/api/orders.php', {
+    const response = await fetch('http://192.168.1.19/online-ordering-system/api/orders.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -164,6 +173,13 @@ const handlePayment = async () => {
 
   return (
     <View style={styles.container}>
+      {/* Profile Icon at top right */}
+      <TouchableOpacity
+        style={styles.profileIcon}
+        onPress={() => navigation.navigate('Profile')}
+      >
+        <Ionicons name="person-circle-outline" size={50} color="#ff69b4" />
+      </TouchableOpacity>
       <Text style={styles.title}>Find Your Favorite Food</Text>
       <FlatList
         data={menuItems}
@@ -363,6 +379,7 @@ const styles = StyleSheet.create({
     color: '#ff69b4', // Hot pink
     marginBottom: 20,
     textAlign: 'center',
+    marginTop: 50,
   },
   menuList: {
     paddingBottom: 20,
@@ -521,6 +538,11 @@ selectedToggle: {
 toggleText: {
   color: '#fff',
   fontWeight: 'bold',
+},
+profileIcon: {
+  position: 'absolute',
+  top: 20,
+  right: 20,
 },
 });
 

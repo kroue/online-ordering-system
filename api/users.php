@@ -3,9 +3,9 @@ include 'db.php';
 
 // Add CORS headers
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *'); // Allow all origins
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS'); // Allow specific HTTP methods
-header('Access-Control-Allow-Headers: Content-Type, Authorization'); // Allow specific headers
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -13,20 +13,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Determine the HTTP method
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
-    // Fetch all users
-    $query = "SELECT id, email FROM users";
-    $result = $conn->query($query);
-
-    if ($result) {
-        $users = $result->fetch_all(MYSQLI_ASSOC);
-        echo json_encode($users);
+    // Fetch all users or a specific user by email
+    if (isset($_GET['email'])) {
+        $email = $conn->real_escape_string($_GET['email']);
+        $query = "SELECT id, first_name, last_name, address, email FROM users WHERE email = '$email'";
+        $result = $conn->query($query);
+        if ($result) {
+            $users = $result->fetch_all(MYSQLI_ASSOC);
+            echo json_encode($users);
+        } else {
+            echo json_encode(['error' => 'Failed to fetch user', 'details' => $conn->error]);
+            http_response_code(500);
+        }
     } else {
-        echo json_encode(['error' => 'Failed to fetch users', 'details' => $conn->error]);
-        http_response_code(500);
+        $query = "SELECT id, first_name, last_name, address, email FROM users";
+        $result = $conn->query($query);
+        if ($result) {
+            $users = $result->fetch_all(MYSQLI_ASSOC);
+            echo json_encode($users);
+        } else {
+            echo json_encode(['error' => 'Failed to fetch users', 'details' => $conn->error]);
+            http_response_code(500);
+        }
     }
     exit;
 }
@@ -43,8 +54,11 @@ if ($method === 'POST') {
 
     $email = $conn->real_escape_string($input['email']);
     $password = password_hash($conn->real_escape_string($input['password']), PASSWORD_BCRYPT);
+    $first_name = isset($input['first_name']) ? $conn->real_escape_string($input['first_name']) : '';
+    $last_name = isset($input['last_name']) ? $conn->real_escape_string($input['last_name']) : '';
+    $address = isset($input['address']) ? $conn->real_escape_string($input['address']) : '';
 
-    $query = "INSERT INTO users (email, password) VALUES ('$email', '$password')";
+    $query = "INSERT INTO users (email, password, first_name, last_name, address) VALUES ('$email', '$password', '$first_name', '$last_name', '$address')";
     if ($conn->query($query)) {
         echo json_encode(['message' => 'User created successfully']);
     } else {
@@ -66,8 +80,17 @@ if ($method === 'PUT') {
 
     $id = $conn->real_escape_string($input['id']);
     $email = $conn->real_escape_string($input['email']);
+    $first_name = isset($input['first_name']) ? $conn->real_escape_string($input['first_name']) : '';
+    $last_name = isset($input['last_name']) ? $conn->real_escape_string($input['last_name']) : '';
+    $address = isset($input['address']) ? $conn->real_escape_string($input['address']) : '';
 
-    $query = "UPDATE users SET email = '$email' WHERE id = $id";
+    $set = "email = '$email', first_name = '$first_name', last_name = '$last_name', address = '$address'";
+    if (!empty($input['password'])) {
+        $password = password_hash($conn->real_escape_string($input['password']), PASSWORD_BCRYPT);
+        $set .= ", password = '$password'";
+    }
+
+    $query = "UPDATE users SET $set WHERE id = $id";
     if ($conn->query($query)) {
         echo json_encode(['message' => 'User updated successfully']);
     } else {
